@@ -11,6 +11,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
+import java.util.zip.CRC32;
 
 public class Tool {
 
@@ -27,14 +28,15 @@ public class Tool {
                 JarEntry je = new JarEntry(entry.name);
                 je.setComment(entry.comment);
                 je.setTime(entry.time);
-                je.setExtra(entry.extra);
                 je.setMethod(entry.method);
-                je.setCrc(entry.crc);
-                je.setSize(entry.size);
-                jaros.putNextEntry(je);
 
-                if (!je.isDirectory()) {
-
+                if (je.isDirectory()) {
+                    if (entry.method == JarEntry.STORED) {
+                        je.setCrc(0);
+                        je.setSize(0);
+                    }
+                    jaros.putNextEntry(je);
+                } else {
                     File file = null;
                     for (String dir : directories) {
                         File t = new File(dir, entry.name);
@@ -47,6 +49,21 @@ public class Tool {
                         throw new FileNotFoundException("File not found: " + entry.name);
                     }
 
+                    if (entry.method == JarEntry.STORED) {
+                        CRC32 crc = new CRC32();
+                        int len;
+                        long fileSize = 0;
+                        try (FileInputStream fis = new FileInputStream(file)) {
+                            while ((len = fis.read(buffer)) != -1) {
+                                crc.update(buffer, 0, len);
+                                fileSize += len;
+                            }
+                        }
+                        je.setCrc(crc.getValue());
+                        je.setSize(fileSize);
+                    }
+
+                    jaros.putNextEntry(je);
                     // we could check that the file size and crc match the expected values here...
                     try (FileInputStream fis = new FileInputStream(file)) {
                         // Read the file content and write it to the zip file
@@ -111,8 +128,6 @@ public class Tool {
                     e.time = entry.getTime();
                     e.extra = entry.getExtra();
                     e.method = entry.getMethod();
-                    e.crc = entry.getCrc();
-                    e.size = entry.getSize();
                     structure.entries.add(e);
                 }
             });

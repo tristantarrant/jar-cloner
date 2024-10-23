@@ -24,15 +24,15 @@ public class CreateMojo extends AbstractMojo {
     @Parameter(property = "jar-cloner.resources", defaultValue = "${basedir}/src/main/jar-cloner-resources", required = false)
     private File resources;
 
-    @Parameter(property = "jar-cloner.jar", defaultValue = "${project.build.directory}/${project.build.finalName}.jar", required = true)
-    private File archiveFile;
+    @Parameter(property = "jar-cloner.to-jar", defaultValue = "${project.build.directory}/${project.build.finalName}.jar", required = true)
+    private File toArchiveFile;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        System.out.println("creating jar structure from: " + metaFile + ", to: " + archiveFile);
+        System.out.println("creating jar structure from: " + metaFile + ", to: " + toArchiveFile);
         try {
-            archiveFile.getParentFile().mkdirs();
+            toArchiveFile.getParentFile().mkdirs();
             String[] directories = {resources.getAbsolutePath(), directory.getAbsolutePath()};
-            Tool.create(directories, metaFile.getAbsolutePath(), archiveFile.getAbsolutePath());
+            Tool.create(directories, metaFile.getAbsolutePath(), toArchiveFile.getAbsolutePath());
         } catch (Exception e) {
             throw new MojoExecutionException("Error creating jar file", e);
         }

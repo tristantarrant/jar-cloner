@@ -28,7 +28,7 @@ public class ExtractMojo extends AbstractMojo {
             yamlFile.getParentFile().mkdirs();
             Tool.extract(archiveFile.getAbsolutePath(), yamlFile.getAbsolutePath(), null);
         } catch (Exception e) {
-            throw new MojoExecutionException("Error creating jar file", e);
+            throw new MojoExecutionException("Error creating yaml file", e);
         }
     }
 }

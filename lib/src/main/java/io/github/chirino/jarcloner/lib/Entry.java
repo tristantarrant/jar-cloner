@@ -6,6 +6,4 @@ public class Entry {
     public long time;
     public byte[] extra;
     public int method;
-    public long crc;
-    public long size;
 }

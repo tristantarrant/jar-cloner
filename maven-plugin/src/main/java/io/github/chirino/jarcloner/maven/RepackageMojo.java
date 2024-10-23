@@ -19,8 +19,11 @@ public class RepackageMojo extends AbstractMojo {
     @Parameter(property = "jar-cloner.structure-yaml", defaultValue = "${basedir}/src/main/jar-cloner.yaml", required = true)
     private File metaFile;
 
-    @Parameter(property = "jar-cloner.jar", defaultValue = "${project.build.directory}/${project.build.finalName}.jar", required = true)
-    private File archiveFile;
+    @Parameter(property = "jar-cloner.from-jar", defaultValue = "${project.build.directory}/${project.build.finalName}.jar", required = true)
+    private File fromArchiveFile;
+
+    @Parameter(property = "jar-cloner.to-jar", defaultValue = "${project.build.directory}/${project.build.finalName}.jar", required = true)
+    private File toArchiveFile;
 
     @Parameter(property = "jar-cloner.resources", defaultValue = "${basedir}/src/main/jar-cloner-resources", required = false)
     private File resources;
@@ -29,12 +32,12 @@ public class RepackageMojo extends AbstractMojo {
     private File directory;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        System.out.println("repacking jar :" + archiveFile + ", using structure from: " + metaFile + " and resources from: " + resources);
+        System.out.println("repacking jar :" + fromArchiveFile + ", using structure from: " + metaFile + " and resources from: " + resources);
         try {
 
-            Tool.extract(archiveFile.getAbsolutePath(), null, directory.getAbsolutePath());
+            Tool.extract(fromArchiveFile.getAbsolutePath(), null, directory.getAbsolutePath());
             String[] directories = {resources.getAbsolutePath(), directory.getAbsolutePath()};
-            Tool.create(directories, metaFile.getAbsolutePath(), archiveFile.getAbsolutePath());
+            Tool.create(directories, metaFile.getAbsolutePath(), toArchiveFile.getAbsolutePath());
 
         } catch (Exception e) {
             throw new MojoExecutionException("Error creating jar file", e);
