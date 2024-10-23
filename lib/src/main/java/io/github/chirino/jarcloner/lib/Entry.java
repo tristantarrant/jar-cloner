@@ -1,6 +1,4 @@
-package io.github.chirino.jarcloner;
-
-import java.util.jar.Attributes;
+package io.github.chirino.jarcloner.lib;
 
 public class Entry {
     public String name;
